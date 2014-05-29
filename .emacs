@@ -8,6 +8,12 @@
 (xterm-mouse-mode 1)
 (mouse-wheel-mode 1)
 
+;;show line numbers
+(global-linum-mode 1)
+
+;;reload lisp file hotkey
+(global-set-key (kbd "C-S-l")     'load-file)
+
 ;;start with fullscreen window
 (defun toggle-fullscreen ()
   (interactive)
