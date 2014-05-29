@@ -28,6 +28,24 @@
 (require 'dired )
 (define-key dired-mode-map (kbd "<return>") 'dired-find-alternate-file) ; was dired-advertised-find-file
 (define-key dired-mode-map (kbd "^") (lambda () (interactive) (dired-find-alternate-file "..")))  ; was dired-up-directory
+(defun pal-mouse-find-alternate-file (event)
+  "In Dired, visit the file or directory name you click on."
+  (interactive "e")
+  (let (window pos file)
+    (save-excursion
+      (setq window (posn-window (event-end event))
+            pos (posn-point (event-end event)))
+      (if (not (windowp window))
+          (error "No file chosen"))
+      (set-buffer (window-buffer window))
+      (goto-char pos)
+      (setq file (dired-get-file-for-visit)))
+    (find-alternate-file file)))
+
+
+(add-hook 'dired-mode-hook
+          (lambda ()
+            (local-set-key [down-mouse-1] 'pal-mouse-find-alternate-file)))
 
 ;;trick to use C- and M- with russian
 (loop
@@ -58,7 +76,7 @@
 	(kill-append (buffer-substring beg end) (< end beg))
       (kill-new (buffer-substring beg end))))
   (beginning-of-line 2))
-(global-set-key (kbd "C-M-k") 'quick-copy-line)
+(global-set-key (kbd "C-S-k") 'quick-copy-line)
 
 ;;enabling of package manager
 (when (>= emacs-major-version 24)
