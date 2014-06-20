@@ -60,6 +60,11 @@
 (require 'bs)
 (global-set-key (kbd "C-x C-b") 'bs-show)
 
+;;ido = interactively do things - buffer and file smart selection
+;;"C-x b" and "C-x C-f" accordingly 
+(require 'ido)
+(ido-mode t)
+
 ;;goto visible bufer with <S-arrow>
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
@@ -81,8 +86,9 @@
 ;;enabling of package manager
 (when (>= emacs-major-version 24)
   (require 'package)
-  (package-initialize)
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  (setq package-enable-at-startup nil)
+  (package-initialize)
   
   ;;moving emacs own buffers around the screen
   (require 'buffer-move)
@@ -90,4 +96,7 @@
   (global-set-key (kbd "<C-S-down>")   'buf-move-down)
   (global-set-key (kbd "<C-S-left>")   'buf-move-left)
   (global-set-key (kbd "<C-S-right>")  'buf-move-right)
+
+  ;;version control
+  (require 'magit)
   )
