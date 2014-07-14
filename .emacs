@@ -90,6 +90,27 @@
   (beginning-of-line 2))
 (global-set-key (kbd "C-S-k") 'quick-copy-line)
 
+;;tip-of-the-day
+(defun totd ()
+  (interactive)
+  (with-output-to-temp-buffer "*Tip of the day*"
+    (let* ((commands (loop for s being the symbols
+                           when (commandp s) collect s))
+           (command (nth (random (length commands)) commands)))
+      (princ
+       (concat "Your tip for the day is:\n========================\n\n"
+               (describe-function command)
+               "\n\nInvoke with:\n\n"
+               (with-temp-buffer
+                 (where-is command t)
+                 (buffer-string)))))))
+
+(totd)
+
+;;python indentations
+(global-set-key (kbd "<C-tab>")     'python-indent-shift-right)
+(global-set-key (kbd "<C-S-iso-lefttab>")   'python-indent-shift-left)
+
 ;;enabling of package manager
 (when (>= emacs-major-version 24)
   (require 'package)
