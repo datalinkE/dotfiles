@@ -1,6 +1,59 @@
 ;;common lisp standart functions: loop etc.
 (require 'cl)
 
+;;things that need additional packages
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") )
+  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/" ))
+  (setq package-enable-at-startup nil)
+  (package-initialize)
+  
+  ;;moving emacs own buffers around the screen
+  (require 'buffer-move)
+
+  ;;version control
+  (require 'magit)
+
+  ;;cmake-project
+  ;; (require 'cmake-project)
+  ;; (defun maybe-cmake-project-hook ()
+  ;;   (if (file-exists-p "CMakeLists.txt") (cmake-project-mode)))
+  ;; (add-hook 'c-mode-hook 'maybe-cmake-project-hook)
+  ;; (add-hook 'c++-mode-hook 'maybe-cmake-project-hook)
+
+  ;;paranteses aroud cursor position, if any
+  (require 'highlight-parentheses)
+  (highlight-parentheses-mode 1)
+
+  
+  ;; cygwin support
+  ;; Sets your shell to use cygwin's bash, if Emacs finds it's running
+  ;; under Windows and c:\cygwin exists. Assumes that C:\cygwin\bin is
+  ;; not already in your Windows Path (it generally should not be).
+  ;;
+  (let* ((cygwin-root "c:/cygwin64")
+	 (cygwin-bin (concat cygwin-root "/bin")))
+    (when (and (eq 'windows-nt system-type)
+	       (file-readable-p cygwin-root))
+      (require 'cygwin-mount);added later
+      (setq exec-path (cons cygwin-bin exec-path))
+      (setenv "PATH" (concat cygwin-bin ";" (getenv "PATH")))
+      
+      ;; By default use the Windows HOME.
+      ;; Otherwise, uncomment below to set a HOME
+      ;;      (setenv "HOME" (concat cygwin-root "/home/eric"))
+      
+      ;; NT-emacs assumes a Windows shell. Change to bash.
+      (setq shell-file-name "bash")
+      (setenv "SHELL" shell-file-name) 
+      (setq explicit-shell-file-name shell-file-name) 
+      
+      ;; This removes unsightly ^M characters that would otherwise
+      ;; appear in the output of java applications.
+      (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
+)
+
 ;;presere opened buffers on emacs restarts
 (desktop-save-mode 1)
 
@@ -12,7 +65,12 @@
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1) ;; keyboard scroll one line at a time
 
-;;show line numbers
+;;colors, fonts and themes
+;;(require 'sublime-themes)
+(load-theme 'wombat 't)
+;;font size
+(set-face-attribute 'default nil :height 120)
+;;show line numbers with fixed size
 (global-linum-mode 1)
 (set-face-attribute 'linum nil :height 100)
 (setq-default left-fringe-width  10)
@@ -31,9 +89,6 @@
 ;(menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-
-;;font size
-(set-face-attribute 'default nil :height 120)
 
 ;;start with fullscreen window
 (defun toggle-fullscreen ()
@@ -124,36 +179,6 @@
 	(kill-append (buffer-substring beg end) (< end beg))
       (kill-new (buffer-substring beg end))))
   (beginning-of-line 2))
-
-;;enabling of package manager
-(when (>= emacs-major-version 24)
-  (require 'package)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") )
-  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/" ))
-  (setq package-enable-at-startup nil)
-  (package-initialize)
-  
-  ;;moving emacs own buffers around the screen
-  (require 'buffer-move)
-
-  ;;version control
-  (require 'magit)
-
-  ;;cmake-project
-  ;; (require 'cmake-project)
-  ;; (defun maybe-cmake-project-hook ()
-  ;;   (if (file-exists-p "CMakeLists.txt") (cmake-project-mode)))
-  ;; (add-hook 'c-mode-hook 'maybe-cmake-project-hook)
-  ;; (add-hook 'c++-mode-hook 'maybe-cmake-project-hook)
-
-  ;;paranteses aroud cursor position, if any
-  (require 'highlight-parentheses)
-  (highlight-parentheses-mode 1)
- 
-;;
-  (require 'sublime-themes)
-  (load-theme 'wombat 't)
-)
 
 ;;sgalustyan keybindings
 (defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
