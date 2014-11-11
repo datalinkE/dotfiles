@@ -174,7 +174,7 @@
  (eval `(define-key key-translation-map (kbd ,(concat "M-" (string from))) (kbd ,(concat     "M-" (string to))))))
 
 
-;;goto visible bufer with <S-arrow>
+;;goto visible bufer buferwith <S-arrow>
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
 
@@ -225,6 +225,30 @@
   (copy-thing 'backward-word 'forward-word)
   )
 
+;; Shift the selected region right if distance is postive, left if
+;; negative
+
+(defun shift-text (distance)
+  (if (use-region-p)
+      (let ((mark (mark)))
+        (save-excursion
+          (indent-rigidly (region-beginning)
+                          (region-end)
+                          distance)
+          (push-mark mark t t)
+          (setq deactivate-mark nil)))
+    (indent-rigidly (line-beginning-position)
+                    (line-end-position)
+                    distance)))
+
+(defun shift-right ()
+  (interactive)
+  (shift-text 4))
+
+(defun shift-left ()
+  (interactive)
+  (shift-text -4))
+
 ;; keybindings
 (defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
 
@@ -264,10 +288,10 @@
 (define-key my-keys-minor-mode-map (kbd "C-~") 'toggle-fullscreen)
 (define-key my-keys-minor-mode-map (kbd "C-`") 'sr-speedbar-toggle)
 
-;;manual indentations
-(define-key my-keys-minor-mode-map (kbd "<C-tab>")     'python-indent-shift-right)
-(define-key my-keys-minor-mode-map (kbd "<backtab>")   'python-indent-shift-left)
-(define-key my-keys-minor-mode-map (kbd "<C-S-iso-lefttab>")   'python-indent-shift-left)
+      ;;manual indentations
+(define-key my-keys-minor-mode-map (kbd "<C-tab>")     'shift-right)
+(define-key my-keys-minor-mode-map (kbd "<backtab>")   'shift-left)
+(define-key my-keys-minor-mode-map (kbd "<C-S-iso-lefttab>")   'shift-left)
 
 (define-key my-keys-minor-mode-map  (kbd "C-,")   'buf-move-left)
 (define-key my-keys-minor-mode-map  (kbd "C-.")  'buf-move-right)
