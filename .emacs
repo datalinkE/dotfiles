@@ -1,7 +1,6 @@
 ;; common lisp standart functions: loop etc.
 (require 'cl)
 
-
 (setq tramp-default-method "ssh")
 
 
@@ -15,30 +14,6 @@
 ;; start with single window
 (add-hook 'emacs-startup-hook 'delete-other-windows)
 
-
-;; Load CEDET, required for ECB
-
-;; (require 'assoc)
-
-;; (load-file "~/cedet-1.1/common/cedet.el")
-;; ;; ;;(global-ede-mode 1)                      ; Enable the Project management system
-;; (semantic-load-enable-code-helpers)      ; Enable prototype help and smart completion 
-;; ;; ;;(global-srecode-minor-mode 1)            ; Enable template insertion menu
-;; (global-semantic-idle-scheduler-mode 1)
-;; (global-cedet-m3-minor-mode 1)
-
-
-;; (add-to-list 'load-path
-;; 	     "~/ecb-2.40")
-;; (setq stack-trace-on-error t) 
-
-;; (require 'ecb)
-;; (setq ecb-primary-secondary-mouse-buttons (quote mouse-1--C-mouse-1))
-;; (setq ecb-tip-of-the-day nil)
-;; (setq ecb-ping-program "ssh")
-;; (setq ecb-ping-options (list "HOST" "ping" "-c" "1" "localhost"))
-;; (setq ecb-source-path (list (list "/" "THIS-MACHINE") (list "/ap:/" "REMOTE-AP")))
-;; (ecb-activate)
 
 ;;things that need additional packages
 (when (>= emacs-major-version 24)
@@ -64,6 +39,11 @@
 ;;paranteses aroud cursor position, if any
 (require 'highlight-parentheses)
 (global-highlight-parentheses-mode 1)
+
+
+;; go-to symbol support (code navigation)
+(require 'ggtags)
+(add-hook 'emacs-startup-hook 'ggtags-mode)
 
 
 ;;presere opened buffers on emacs restarts
@@ -261,18 +241,15 @@
 (define-key my-keys-minor-mode-map (kbd "C-=") 'text-scale-increase)
 (define-key my-keys-minor-mode-map (kbd "C--") 'text-scale-decrease)
 (define-key my-keys-minor-mode-map (kbd "C-\\") 'bookmark-bmenu-list)
-(define-key my-keys-minor-mode-map (kbd "C-M-f") 'rgrep)
-(define-key my-keys-minor-mode-map (kbd "M-g") 'gtags-find-tag)
-;(define-key my-keys-minor-mode-map (kbd "M-*") 'gtags-pop-stack)
+
 (define-key my-keys-minor-mode-map (kbd "M-o") 'ido-find-file)
 (define-key my-keys-minor-mode-map (kbd "M-R") 'replace-string)
 (define-key my-keys-minor-mode-map (kbd "M-i") 'occur)
 (define-key my-keys-minor-mode-map (kbd "M-m") 'imenu-make-selection-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-<backspace>") 'pop-global-mark)
 
-;;(define-key my-keys-minor-mode-map (kbd "<f3>") 'semantic-ia-fast-jump)
 (define-key my-keys-minor-mode-map (kbd "<f4>") 'ff-find-other-file)
-;;(define-key my-keys-minor-mode-map (kbd "<f5>") 'save-buffer)
+
 (define-key my-keys-minor-mode-map (kbd "C-<f5>") 'revert-buffer-no-confirm)
 (define-key my-keys-minor-mode-map (kbd "<f7>") 'save-all-and-compile)
 (define-key my-keys-minor-mode-map (kbd "<f11>") 'bookmark-set)
@@ -293,10 +270,10 @@
 (define-key my-keys-minor-mode-map (kbd "<backtab>")   'shift-left)
 (define-key my-keys-minor-mode-map (kbd "<C-S-iso-lefttab>")   'shift-left)
 
-(define-key my-keys-minor-mode-map  (kbd "C-,")   'buf-move-left)
-(define-key my-keys-minor-mode-map  (kbd "C-.")  'buf-move-right)
-(define-key my-keys-minor-mode-map (kbd "M-,") 'windmove-left)  
-(define-key my-keys-minor-mode-map (kbd "M-.") 'windmove-right)
+(define-key my-keys-minor-mode-map  (kbd "M-[")   'buf-move-left)
+(define-key my-keys-minor-mode-map  (kbd "M-]")  'buf-move-right)
+;;(define-key my-keys-minor-mode-map (kbd "M-,") 'windmove-left)  
+;;(define-key my-keys-minor-mode-map (kbd "M-.") 'windmove-right)
 
 ;;traditional osx
 (define-key my-keys-minor-mode-map (kbd "M-s") 'save-buffer)
@@ -309,6 +286,9 @@
 (define-key my-keys-minor-mode-map (kbd "<f3>") 'execute-extended-command)
 (define-key my-keys-minor-mode-map (kbd "M-l") 'quick-copy-word)
 (define-key my-keys-minor-mode-map (kbd "C-l") 'quick-copy-line)
+
+(define-key my-keys-minor-mode-map (kbd "C-/") 'rgrep)
+;;(define-key my-keys-minor-mode-map (kbd "M-/") 'gtags-find-tag)
 
 
 (define-minor-mode my-keys-minor-mode
