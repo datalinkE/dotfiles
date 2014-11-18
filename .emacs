@@ -33,7 +33,7 @@
 
 
 ;;moving emacs own buffers around the screen
-(require 'buffer-move)
+;;(require 'buffer-move)
 
 
 ;;paranteses aroud cursor position, if any
@@ -41,15 +41,22 @@
 (global-highlight-parentheses-mode 1)
 
 
+;; autoclose braces
+(require 'smartparens-config)
+(smartparens-global-mode t)
+
+
 ;; go-to symbol support (code navigation)
 (require 'ggtags)
-(add-hook 'emacs-startup-hook 'ggtags-mode)
+(setq ggtags-auto-jump-to-match nil)
+(add-hook 'prog-mode-hook 'ggtags-mode)
 
 
 ;;presere opened buffers on emacs restarts
 (desktop-save-mode 1)
-(setq desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\)")
-;;(setq desktop-files-not-to-save "^$")
+;;(setq desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\)")
+(setq desktop-files-not-to-save "^$")
+(setq desktop-restore-eager 5)
 
 
 ;;mouse and scroll fixes including console emacs
@@ -88,6 +95,11 @@
 ;(menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+
+;; indentation in c/cpp/java etc.
+(setq c-default-style "bsd"
+      c-basic-offset 4)
+
 
 ;;start with fullscreen window
 (defun toggle-fullscreen-linux()
@@ -270,10 +282,10 @@
 (define-key my-keys-minor-mode-map (kbd "<backtab>")   'shift-left)
 (define-key my-keys-minor-mode-map (kbd "<C-S-iso-lefttab>")   'shift-left)
 
-(define-key my-keys-minor-mode-map  (kbd "M-[")   'buf-move-left)
-(define-key my-keys-minor-mode-map  (kbd "M-]")  'buf-move-right)
-;;(define-key my-keys-minor-mode-map (kbd "M-,") 'windmove-left)  
-;;(define-key my-keys-minor-mode-map (kbd "M-.") 'windmove-right)
+;;(define-key my-keys-minor-mode-map  (kbd "M-[")   'buf-move-left)
+;;(define-key my-keys-minor-mode-map  (kbd "M-]")  'buf-move-right)
+(define-key my-keys-minor-mode-map (kbd "M-[") 'windmove-left)  
+(define-key my-keys-minor-mode-map (kbd "M-]") 'windmove-right)
 
 ;;traditional osx
 (define-key my-keys-minor-mode-map (kbd "M-s") 'save-buffer)
