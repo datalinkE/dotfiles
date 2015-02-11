@@ -1,14 +1,23 @@
 ;; common lisp standart functions: loop etc.
 (require 'cl)
 
-(setq tramp-default-method "ssh")
+(setq-default tramp-default-method "ssh")
 
+;;presere opened buffers on emacs restarts
+(setq-default
+ desktop-dirname             "~/.emacs.d/desktop/"
+ desktop-base-file-name      "emacs.desktop"
+ desktop-base-lock-name      "lock"
+ desktop-path                (list desktop-dirname)
+ desktop-save                t
+ desktop-files-not-to-save   "^$" ;reload tramp paths
+ desktop-load-locked-desktop nil
+ desktop-restore-eager       5)
 
-;; Removes *scratch* from buffer after the mode has been set.
-(defun remove-scratch-buffer ()
-  (if (get-buffer "*scratch*")
-      (kill-buffer "*scratch*")))
-(add-hook 'after-change-major-mode-hook 'remove-scratch-buffer)
+(desktop-save-mode 1)
+
+;; own keymap for use in this file
+(defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
 
 
 ;; start with single window
@@ -20,20 +29,18 @@
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") )
   ;;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/" ))
-  (setq package-enable-at-startup nil)
+  (setq-default package-enable-at-startup nil)
   (package-initialize)
-)
+  )
+
 
 ;; file navigation
 (require 'sr-speedbar)
-(setq speedbar-use-images nil)
-(setq speedbar-show-unknown-files 1)
-(setq sr-speedbar-width 20)
-(sr-speedbar-open)
-
-
-;;moving emacs own buffers around the screen
-;;(require 'buffer-move)
+(setq-default speedbar-use-images nil)
+(setq-default speedbar-show-unknown-files 1)
+(setq-default sr-speedbar-width 50)
+(setq-default sr-speedbar-auto-refresh t)
+;;(sr-speedbar-open)
 
 
 ;;paranteses aroud cursor position, if any
@@ -43,29 +50,62 @@
 
 ;; autoclose braces
 (require 'smartparens-config)
+(sp-pair "'" nil :actions :rem)
+(sp-pair "`" nil :actions :rem)
+(sp-pair "\"" nil :actions :rem)
+;(sp-autoescape-string-quote 0)
+(setq-default sp-autoescape-string-quote nil)
 (smartparens-global-mode t)
-
 
 ;; go-to symbol support (code navigation)
 (require 'ggtags)
-(setq ggtags-auto-jump-to-match nil)
+(setq-default ggtags-auto-jump-to-match nil)
 (add-hook 'prog-mode-hook 'ggtags-mode)
 
 
-;;presere opened buffers on emacs restarts
-(desktop-save-mode 1)
-;;(setq desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\)")
-(setq desktop-files-not-to-save "^$")
-(setq desktop-restore-eager 5)
+;; vim-like navigation + emacs bindings in insert mode
+(require 'evil)
+;; remove all keybindings from insert-state keymap
+(setcdr evil-insert-state-map nil)
+;; but [escape] should switch back to normal state
+(define-key evil-insert-state-map (kbd "<escape>") 'evil-normal-state)
+(evil-mode 1)
+
+;; company mode
+(require 'company)
+(add-to-list 'load-path "~/.emacs.d")
+(autoload 'gtags-mode "gtags" "" t)
+
+(require 'company-gtags)
+(setq-default company-backends '(company-elisp
+                         company-ropemacs
+                         ;company-gtags
+                         (company-dabbrev-code
+                         company-keywords)
+                         company-files
+                         company-dabbrev))
+
+(add-hook 'after-init-hook 'global-company-mode)
+
+(define-key my-keys-minor-mode-map (kbd "C-SPC") 'company-complete)
+
+(defun complete-or-indent ()
+    (interactive)
+    (if (company-manual-begin)
+        (company-complete-common-or-cycle)
+      (indent-according-to-mode)))
+
+;(define-key my-keys-minor-mode-map (kbd "<tab>") 'complete-or-indent)
+(define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
 
 
-;;mouse and scroll fixes including console emacs
+;; mouse and scroll fixes including console emacs
 (xterm-mouse-mode 1)
 (mouse-wheel-mode 1)
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-(setq mouse-wheel-progressive-speed 't) 
-(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-(setq scroll-step 1) ;; keyboard scroll one line at a time
+(setq-default mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+(setq-default mouse-wheel-progressive-speed 't)
+(setq-default mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+(setq-default scroll-step 1) ;; keyboard scroll one line at a time
 
 
 ;;colors, fonts and themes
@@ -84,7 +124,7 @@
 
 
 ;;no useless start buffer
-(setq inhibit-splash-screen t)
+(setq-default inhibit-splash-screen t)
 
 
 ;;thin cursor istead of rectangle
@@ -97,16 +137,31 @@
 (scroll-bar-mode -1)
 
 ;; indentation in c/cpp/java etc.
-(setq c-default-style "bsd"
+(setq-default c-default-style "bsd"
       c-basic-offset 4)
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq-default tab-stop-list (number-sequence 4 120 4))
+
+;; Set default tab space for various  python modes
+(setq-default py-indent-offset 4)
+(setq-default python-indent 4)
+(setq-default python-indent-guess-indent-offset nil)
+
+
+;; highlight incorrect blank symbols
+(require 'whitespace)
+(setq-default whitespace-style '(face tabs trailing lines space-before-tab newline indentation empty space-after-tab tab-mark))
+(setq-default whitespace-line-column 160)
+(global-whitespace-mode t)
 
 
 ;;start with fullscreen window
 (defun toggle-fullscreen-linux()
   (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-			 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+                         '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
   (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-			 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+                         '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
   )
 
 (defun toggle-fullscreen-windows()
@@ -137,7 +192,7 @@
   (find-file "~/.emacs")
   (end-of-buffer))
 
-(setq vc-follow-symlinks t)
+(setq-default vc-follow-symlinks t)
 
 
 ;;compile with Makefile from any place
@@ -147,15 +202,29 @@
   (compile "runcompile.sh")) ;custom script
 
 
-;;smart filenames autocompletions
+;; smart filenames autocompletions
 (require 'ido)
-(ido-mode t)
-(ido-mode 'both)
+;(ido-mode t)
+;(ido-mode 'both)
+;;fuzzy-search for ido
+(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq-default ido-enable-flex-matching t)
+(setq-default ido-use-faces nil)
 
-(setq 
+(setq-default
   ido-ignore-buffers ;; ignore these guys
   '("\\` " "^\\*"))
 
+;; make ido display choices vertically
+;(setq ido-separator "\n")
+;; display any item that contains the chars you typed
+(setq-default ido-enable-flex-matching t)
+
+;;(require 'wgrep)
 
 ;;trick to use C- and M- with russian
 (loop
@@ -180,21 +249,21 @@
   "copy thing between beg & end into kill ring"
   (save-excursion
     (let ((beg (get-point begin-of-thing 1))
-	  (end (get-point end-of-thing arg)))
+          (end (get-point end-of-thing arg)))
       (copy-region-as-kill beg end)))
   )
 
 (defun paste-to-mark(&optional arg)
   "Paste things to mark, or to the prompt in shell-mode"
-  (let ((pasteMe 
-     	 (lambda()
-     	   (if (string= "shell-mode" major-mode)
-	       (progn (comint-next-prompt 25535) (yank))
-	     (progn (goto-char (mark)) (yank) )))))
+  (let ((pasteMe
+         (lambda()
+           (if (string= "shell-mode" major-mode)
+               (progn (comint-next-prompt 25535) (yank))
+             (progn (goto-char (mark)) (yank) )))))
     (if arg
-	(if (= arg 1)
-	    nil
-	  (funcall pasteMe))
+        (if (= arg 1)
+            nil
+          (funcall pasteMe))
       (funcall pasteMe))
     ))
 
@@ -205,9 +274,9 @@
     kill-ring."
   (interactive)
   (let ((beg (line-beginning-position 1))
-	(end (line-beginning-position 2)))
+        (end (line-beginning-position 2)))
     (if (eq last-command 'quick-copy-line)
-	(kill-append (buffer-substring beg end) (< end beg))
+        (kill-append (buffer-substring beg end) (< end beg))
       (kill-new (buffer-substring beg end))))
   (beginning-of-line 2))
 
@@ -242,9 +311,8 @@
   (shift-text -4))
 
 ;; keybindings
-(defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
 
-(define-key my-keys-minor-mode-map (kbd "C-d") 'backward-kill-word) 
+(define-key my-keys-minor-mode-map (kbd "C-d") 'backward-kill-word)
 (define-key my-keys-minor-mode-map (kbd "C-9") 'previous-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-0") 'next-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-7") 'hs-hide-block)
@@ -267,8 +335,6 @@
 (define-key my-keys-minor-mode-map (kbd "<f11>") 'bookmark-set)
 (define-key my-keys-minor-mode-map (kbd "<f12>") 'open-config)
 
-
-;;(define-key my-keys-minor-mode-map (kbd "<tab>") 'ido-switch-buffer)
 ;;(define-key my-keys-minor-mode-map (kbd "C-c f") 'iy-go-to-char)
 (define-key my-keys-minor-mode-map (kbd "<delete>") 'delete-char)
 
@@ -277,14 +343,14 @@
 (define-key my-keys-minor-mode-map (kbd "C-~") 'toggle-fullscreen)
 (define-key my-keys-minor-mode-map (kbd "C-`") 'sr-speedbar-toggle)
 
-      ;;manual indentations
+;;manual indentations
 (define-key my-keys-minor-mode-map (kbd "<C-tab>")     'shift-right)
 (define-key my-keys-minor-mode-map (kbd "<backtab>")   'shift-left)
 (define-key my-keys-minor-mode-map (kbd "<C-S-iso-lefttab>")   'shift-left)
 
 ;;(define-key my-keys-minor-mode-map  (kbd "M-[")   'buf-move-left)
 ;;(define-key my-keys-minor-mode-map  (kbd "M-]")  'buf-move-right)
-(define-key my-keys-minor-mode-map (kbd "M-[") 'windmove-left)  
+(define-key my-keys-minor-mode-map (kbd "M-[") 'windmove-left)
 (define-key my-keys-minor-mode-map (kbd "M-]") 'windmove-right)
 
 ;;traditional osx
@@ -296,11 +362,8 @@
 (define-key my-keys-minor-mode-map (kbd "M-z") 'undo)
 
 (define-key my-keys-minor-mode-map (kbd "<f3>") 'execute-extended-command)
-(define-key my-keys-minor-mode-map (kbd "M-l") 'quick-copy-word)
-(define-key my-keys-minor-mode-map (kbd "C-l") 'quick-copy-line)
-
 (define-key my-keys-minor-mode-map (kbd "C-/") 'rgrep)
-;;(define-key my-keys-minor-mode-map (kbd "M-/") 'gtags-find-tag)
+(define-key my-keys-minor-mode-map (kbd "M-/") 'ggtags-grep)
 
 
 (define-minor-mode my-keys-minor-mode
@@ -308,7 +371,8 @@
   t " my-keys" 'my-keys-minor-mode-map)
 
 (defun my-minibuffer-setup-hook ()  (my-keys-minor-mode 0))
-
 (add-hook 'minibuffer-setup-hook 'my-minibuffer-setup-hook)
-
 (my-keys-minor-mode 1)
+
+;; SHOW FILE PATH IN FRAME TITLE
+;(setq-default frame-title-format "%b (%f)")
