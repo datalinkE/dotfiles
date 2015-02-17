@@ -18,7 +18,10 @@
 
 ;; own keymap for use in this file
 (defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
-
+(define-key my-keys-minor-mode-map [left] 'undefined)
+(define-key my-keys-minor-mode-map [right] 'undefined)
+(define-key my-keys-minor-mode-map [up] 'undefined)
+(define-key my-keys-minor-mode-map [down] 'undefined)
 
 ;; start with single window
 (add-hook 'emacs-startup-hook 'delete-other-windows)
@@ -34,13 +37,23 @@
   )
 
 
+
 ;; file navigation
-(require 'sr-speedbar)
-(setq-default speedbar-use-images nil)
-(setq-default speedbar-show-unknown-files 1)
-(setq-default sr-speedbar-width 50)
-(setq-default sr-speedbar-auto-refresh t)
-;;(sr-speedbar-open)
+
+;; (require 'sr-speedbar)
+;; (setq-default speedbar-use-images nil)
+;; (setq-default speedbar-show-unknown-files 1)
+;; (setq-default sr-speedbar-width 50)
+;; (setq-default sr-speedbar-auto-refresh t)
+;; (sr-speedbar-open)
+
+(require 'neotree)
+(add-hook 'neotree-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-change-root)
+            (define-key evil-normal-state-local-map (kbd "SPC") 'push-button)
+            (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+            (define-key evil-normal-state-local-map (kbd "RET") 'push-button)))
 
 
 ;;paranteses aroud cursor position, if any
@@ -69,6 +82,11 @@
 (setcdr evil-insert-state-map nil)
 ;; but [escape] should switch back to normal state
 (define-key evil-insert-state-map (kbd "<escape>") 'evil-normal-state)
+(define-key evil-motion-state-map [left] 'undefined)
+(define-key evil-motion-state-map [right] 'undefined)
+(define-key evil-motion-state-map [up] 'undefined)
+(define-key evil-motion-state-map [down] 'undefined)
+
 (evil-mode 1)
 
 ;; company mode
@@ -341,7 +359,7 @@
 ;;my keybindings
 (define-key my-keys-minor-mode-map (kbd "M-k") 'kill-this-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-~") 'toggle-fullscreen)
-(define-key my-keys-minor-mode-map (kbd "C-`") 'sr-speedbar-toggle)
+(define-key my-keys-minor-mode-map (kbd "C-`") 'neotree-find)
 
 ;;manual indentations
 (define-key my-keys-minor-mode-map (kbd "<C-tab>")     'shift-right)
