@@ -35,17 +35,7 @@
   (package-initialize)
   )
 
-
-
-;; file navigation
-
-;; (require 'sr-speedbar)
-;; (setq-default speedbar-use-images nil)
-;; (setq-default speedbar-show-unknown-files 1)
-;; (setq-default sr-speedbar-width 50)
-;; (setq-default sr-speedbar-auto-refresh t)
-;; (sr-speedbar-open)
-
+;;navigation
 (require 'neotree)
 (add-hook 'neotree-mode-hook
           (lambda ()
@@ -69,11 +59,6 @@
 (setq-default sp-autoescape-string-quote nil)
 (smartparens-global-mode t)
 
-;; go-to symbol support (code navigation)
-;;(require 'ggtags)
-;;(setq-default ggtags-auto-jump-to-match nil)
-;;(add-hook 'prog-mode-hook 'ggtags-mode)
-
 
 (require 'xcscope)
 (cscope-setup)
@@ -95,29 +80,8 @@
 
 ;; company mode
 (require 'company)
-;;(add-to-list 'load-path "~/.emacs.d")
-;;(autoload 'gtags-mode "gtags" "" t)
-
-;; (require 'company-gtags)
-;; (setq-default company-backends '(company-elisp
-;;                         company-ropemacs
-;;                         ;company-gtags
-;;                         (company-dabbrev-code
-;;                         company-keywords)
-;;                         company-files
-;;                         company-dabbrev))
-
 (add-hook 'after-init-hook 'global-company-mode)
-
 (define-key my-keys-minor-mode-map (kbd "C-SPC") 'company-complete)
-
-;; (defun complete-or-indent ()
-;;    (interactive)
-;;    (if (company-manual-begin)
-;;        (company-complete-common-or-cycle)
-;;      (indent-according-to-mode)))
-
-;; (define-key my-keys-minor-mode-map (kbd "<tab>") 'complete-or-indent)
 (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
 
 
@@ -235,8 +199,6 @@
 
 ;; smart filenames autocompletions
 (require 'ido)
-;(ido-mode t)
-;(ido-mode 'both)
 ;;fuzzy-search for ido
 (require 'flx-ido)
 (ido-mode 1)
@@ -250,12 +212,8 @@
   ido-ignore-buffers ;; ignore these guys
   '("\\` " "^\\*"))
 
-;; make ido display choices vertically
-;(setq ido-separator "\n")
 ;; display any item that contains the chars you typed
 (setq-default ido-enable-flex-matching t)
-
-;;(require 'wgrep)
 
 ;;trick to use C- and M- with russian
 (loop
@@ -415,4 +373,4 @@
 (my-keys-minor-mode 1)
 
 ;; SHOW FILE PATH IN FRAME TITLE
-;(setq-default frame-title-format "%b (%f)")
+(setq-default frame-title-format "%b (%f)")
