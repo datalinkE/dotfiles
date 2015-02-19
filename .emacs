@@ -76,6 +76,11 @@
 (add-hook 'prog-mode-hook 'ggtags-mode)
 
 
+(require 'xcscope)
+(cscope-setup)
+(define-key cscope-list-entry-keymap [mouse-1] 'cscope-select-entry-other-window)
+
+
 ;; vim-like navigation + emacs bindings in insert mode
 (require 'evil)
 ;; remove all keybindings from insert-state keymap
