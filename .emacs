@@ -132,11 +132,20 @@
 
 ;;colors, fonts and themes
 (load-theme 'wombat 't)
-;;font size
-(set-face-attribute 'default nil :height 110)
-;;show line numbers with fixed size
+
+
 (global-linum-mode 1)
-(set-face-attribute 'linum nil :height 90)
+;;font size
+(if (eq system-type 'darwin)
+    (progn
+      (set-face-attribute 'default nil :height 130)
+      (set-face-attribute 'linum nil :height 100))
+  (progn
+    (set-face-attribute 'default nil :height 110)
+    (set-face-attribute 'linum nil :height 90))
+  )
+
+;;show line numbers with fixed size
 (setq-default left-fringe-width  10)
 (setq-default right-fringe-width  0)
 
