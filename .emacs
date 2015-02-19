@@ -4,15 +4,14 @@
 (setq-default tramp-default-method "ssh")
 
 ;;presere opened buffers on emacs restarts
-(setq-default
- desktop-dirname             "~/.emacs.d/desktop/"
- desktop-base-file-name      "emacs.desktop"
- desktop-base-lock-name      "lock"
- desktop-path                (list desktop-dirname)
- desktop-save                t
- desktop-files-not-to-save   "^$" ;reload tramp paths
- desktop-load-locked-desktop nil
- desktop-restore-eager       5)
+(setq-default desktop-dirname "~/.emacs.d/desktop/"
+              desktop-base-file-name      "emacs.desktop"
+              desktop-base-lock-name      "lock"
+              desktop-path                (list desktop-dirname)
+              desktop-save                t
+              desktop-files-not-to-save   "^$" ;reload tramp paths
+              desktop-load-locked-desktop nil
+              desktop-restore-eager       5)
 
 (desktop-save-mode 1)
 
@@ -71,9 +70,9 @@
 (smartparens-global-mode t)
 
 ;; go-to symbol support (code navigation)
-(require 'ggtags)
-(setq-default ggtags-auto-jump-to-match nil)
-(add-hook 'prog-mode-hook 'ggtags-mode)
+;;(require 'ggtags)
+;;(setq-default ggtags-auto-jump-to-match nil)
+;;(add-hook 'prog-mode-hook 'ggtags-mode)
 
 
 (require 'xcscope)
@@ -96,29 +95,29 @@
 
 ;; company mode
 (require 'company)
-(add-to-list 'load-path "~/.emacs.d")
-(autoload 'gtags-mode "gtags" "" t)
+;;(add-to-list 'load-path "~/.emacs.d")
+;;(autoload 'gtags-mode "gtags" "" t)
 
-(require 'company-gtags)
-(setq-default company-backends '(company-elisp
-                         company-ropemacs
-                         ;company-gtags
-                         (company-dabbrev-code
-                         company-keywords)
-                         company-files
-                         company-dabbrev))
+;; (require 'company-gtags)
+;; (setq-default company-backends '(company-elisp
+;;                         company-ropemacs
+;;                         ;company-gtags
+;;                         (company-dabbrev-code
+;;                         company-keywords)
+;;                         company-files
+;;                         company-dabbrev))
 
 (add-hook 'after-init-hook 'global-company-mode)
 
 (define-key my-keys-minor-mode-map (kbd "C-SPC") 'company-complete)
 
-(defun complete-or-indent ()
-    (interactive)
-    (if (company-manual-begin)
-        (company-complete-common-or-cycle)
-      (indent-according-to-mode)))
+;; (defun complete-or-indent ()
+;;    (interactive)
+;;    (if (company-manual-begin)
+;;        (company-complete-common-or-cycle)
+;;      (indent-according-to-mode)))
 
-;(define-key my-keys-minor-mode-map (kbd "<tab>") 'complete-or-indent)
+;; (define-key my-keys-minor-mode-map (kbd "<tab>") 'complete-or-indent)
 (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
 
 
@@ -134,10 +133,10 @@
 ;;colors, fonts and themes
 (load-theme 'wombat 't)
 ;;font size
-(set-face-attribute 'default nil :height 130)
+(set-face-attribute 'default nil :height 110)
 ;;show line numbers with fixed size
 (global-linum-mode 1)
-(set-face-attribute 'linum nil :height 110)
+(set-face-attribute 'linum nil :height 90)
 (setq-default left-fringe-width  10)
 (setq-default right-fringe-width  0)
 
@@ -364,7 +363,7 @@
 ;;my keybindings
 (define-key my-keys-minor-mode-map (kbd "M-k") 'kill-this-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-~") 'toggle-fullscreen)
-(define-key my-keys-minor-mode-map (kbd "C-`") 'neotree-find)
+(define-key my-keys-minor-mode-map (kbd "<f4>") 'neotree-find)
 
 ;;manual indentations
 (define-key my-keys-minor-mode-map (kbd "<C-tab>")     'shift-right)
@@ -376,13 +375,22 @@
 (define-key my-keys-minor-mode-map (kbd "M-[") 'windmove-left)
 (define-key my-keys-minor-mode-map (kbd "M-]") 'windmove-right)
 
-;;traditional osx
-(define-key my-keys-minor-mode-map (kbd "M-s") 'save-buffer)
-(define-key my-keys-minor-mode-map (kbd "M-x") 'kill-region)
-(define-key my-keys-minor-mode-map (kbd "M-c") 'kill-ring-save)
-(define-key my-keys-minor-mode-map (kbd "M-v") 'yank)
+;;traditional controls
+
 (define-key my-keys-minor-mode-map (kbd "M-q") 'save-buffers-kill-terminal)
-(define-key my-keys-minor-mode-map (kbd "M-z") 'undo)
+
+(if (eq system-type 'darwin)
+    (progn (define-key my-keys-minor-mode-map (kbd "M-s") 'save-buffer)
+           (define-key my-keys-minor-mode-map (kbd "M-x") 'kill-region)
+           (define-key my-keys-minor-mode-map (kbd "M-c") 'kill-ring-save)
+           (define-key my-keys-minor-mode-map (kbd "M-v") 'yank)
+           (define-key my-keys-minor-mode-map (kbd "M-z") 'undo))
+
+  (progn  (cua-mode t)
+          (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
+          (transient-mark-mode 1) ;; No region when it is not highlighted
+          (setq cua-keep-region-after-copy t) ;; Standard Windows behaviour))
+          ))
 
 (define-key my-keys-minor-mode-map (kbd "<f3>") 'execute-extended-command)
 (define-key my-keys-minor-mode-map (kbd "C-/") 'rgrep)
