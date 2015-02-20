@@ -317,8 +317,6 @@
 (define-key my-keys-minor-mode-map (kbd "M-m") 'imenu-make-selection-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-<backspace>") 'pop-global-mark)
 
-(define-key my-keys-minor-mode-map (kbd "<f4>") 'ff-find-other-file)
-
 (define-key my-keys-minor-mode-map (kbd "C-<f5>") 'revert-buffer-no-confirm)
 (define-key my-keys-minor-mode-map (kbd "<f7>") 'save-all-and-compile)
 (define-key my-keys-minor-mode-map (kbd "<f11>") 'bookmark-set)
@@ -358,6 +356,13 @@
           (transient-mark-mode 1) ;; No region when it is not highlighted
           (setq cua-keep-region-after-copy t) ;; Standard Windows behaviour))
           ))
+
+(if (eq system-type 'windows-nt)
+    (progn
+      (setq shell-file-name "bash")
+      (setq explicit-shell-file-name shell-file-name)
+      (setq tramp-default-method "sshx"))
+    )
 
 (define-key my-keys-minor-mode-map (kbd "<f3>") 'execute-extended-command)
 (define-key my-keys-minor-mode-map (kbd "C-/") 'rgrep)
