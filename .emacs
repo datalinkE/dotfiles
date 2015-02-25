@@ -17,10 +17,10 @@
 
 ;; own keymap for use in this file
 (defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
-(define-key my-keys-minor-mode-map [left] 'undefined)
-(define-key my-keys-minor-mode-map [right] 'undefined)
-(define-key my-keys-minor-mode-map [up] 'undefined)
-(define-key my-keys-minor-mode-map [down] 'undefined)
+;; (define-key my-keys-minor-mode-map [left] 'undefined)
+;; (define-key my-keys-minor-mode-map [right] 'undefined)
+;; (define-key my-keys-minor-mode-map [up] 'undefined)
+;; (define-key my-keys-minor-mode-map [down] 'undefined)
 
 ;; start with single window
 (add-hook 'emacs-startup-hook 'delete-other-windows)
@@ -317,8 +317,9 @@
 (define-key my-keys-minor-mode-map (kbd "M-m") 'imenu-make-selection-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-<backspace>") 'pop-global-mark)
 
+(define-key my-keys-minor-mode-map (kbd "<f5>") 'save-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-<f5>") 'revert-buffer-no-confirm)
-(define-key my-keys-minor-mode-map (kbd "<f7>") 'save-all-and-compile)
+(define-key my-keys-minor-mode-map (kbd "<f9>") 'save-all-and-compile)
 (define-key my-keys-minor-mode-map (kbd "<f11>") 'bookmark-set)
 (define-key my-keys-minor-mode-map (kbd "<f12>") 'open-config)
 
@@ -328,7 +329,8 @@
 ;;my keybindings
 (define-key my-keys-minor-mode-map (kbd "M-k") 'kill-this-buffer)
 (define-key my-keys-minor-mode-map (kbd "C-~") 'toggle-fullscreen)
-(define-key my-keys-minor-mode-map (kbd "<f4>") 'neotree-find)
+(define-key my-keys-minor-mode-map (kbd "<f4>") 'neotree-toggle)
+(define-key my-keys-minor-mode-map (kbd "C-x <f4>") 'neotree-find)
 
 ;;manual indentations
 (define-key my-keys-minor-mode-map (kbd "<C-tab>")     'shift-right)
@@ -351,11 +353,12 @@
            (define-key my-keys-minor-mode-map (kbd "M-v") 'yank)
            (define-key my-keys-minor-mode-map (kbd "M-z") 'undo))
 
-  (progn  (cua-mode t)
-          (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
-          (transient-mark-mode 1) ;; No region when it is not highlighted
-          (setq cua-keep-region-after-copy t) ;; Standard Windows behaviour))
-          ))
+    (progn (define-key my-keys-minor-mode-map (kbd "C-s") 'save-buffer)
+           (define-key my-keys-minor-mode-map (kbd "M-s") 'isearch-forward)
+           (define-key my-keys-minor-mode-map (kbd "M-x") 'kill-region)
+           (define-key my-keys-minor-mode-map (kbd "C-c") 'kill-ring-save)
+           (define-key my-keys-minor-mode-map (kbd "C-v") 'yank)
+           (define-key my-keys-minor-mode-map (kbd "C-z") 'undo)))
 
 (if (eq system-type 'windows-nt)
     (progn
