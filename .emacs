@@ -17,14 +17,9 @@
 
 ;; own keymap for use in this file
 (defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
-;; (define-key my-keys-minor-mode-map [left] 'undefined)
-;; (define-key my-keys-minor-mode-map [right] 'undefined)
-;; (define-key my-keys-minor-mode-map [up] 'undefined)
-;; (define-key my-keys-minor-mode-map [down] 'undefined)
 
 ;; start with single window
 (add-hook 'emacs-startup-hook 'delete-other-windows)
-
 
 ;;things that need additional packages
 (when (>= emacs-major-version 24)
@@ -32,38 +27,32 @@
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") )
   ;;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/" ))
   (setq-default package-enable-at-startup nil)
-  (package-initialize)
+   (package-initialize)
   )
 
 ;;navigation
 (require 'neotree)
+(setq truncate-partial-width-windows nil)
 (add-hook 'neotree-mode-hook
           (lambda ()
             (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-change-root)
             (define-key evil-normal-state-local-map (kbd "SPC") 'push-button)
             (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
-            (define-key evil-normal-state-local-map (kbd "RET") 'push-button)))
+            (define-key evil-normal-state-local-map (kbd "RET") 'push-button)
+            ))
+
+(require 'dired+)
+(define-key my-keys-minor-mode-map (kbd "C-x C-d") 'dired-jump)
+(define-key my-keys-minor-mode-map (kbd "C-x d") 'dired-jump-other-window)
+(toggle-diredp-find-file-reuse-dir 1)
+
+(defun my-dired-hook ()
+  (define-key dired-mode-map (kbd "<mouse-2>") 'diredp-mouse-find-file-reuse-dir-buffer)
+  (define-key dired-mode-map (kbd "<M-mouse-1>") 'diredp-mouse-find-file))
+(add-hook 'dired-mode-hook 'my-dired-hook)
 
 
-;;paranteses aroud cursor position, if any
-(require 'highlight-parentheses)
-(global-highlight-parentheses-mode 1)
-
-
-;; autoclose braces
-(require 'smartparens-config)
-(sp-pair "'" nil :actions :rem)
-(sp-pair "`" nil :actions :rem)
-(sp-pair "\"" nil :actions :rem)
-;(sp-autoescape-string-quote 0)
-(setq-default sp-autoescape-string-quote nil)
-(smartparens-global-mode t)
-
-
-(require 'xcscope)
-(cscope-setup)
-(define-key cscope-list-entry-keymap [mouse-1] 'cscope-select-entry-other-window)
-
+;;(require 'dired-single)
 
 ;; vim-like navigation + emacs bindings in insert mode
 (require 'evil)
@@ -71,32 +60,21 @@
 (setcdr evil-insert-state-map nil)
 ;; but [escape] should switch back to normal state
 (define-key evil-insert-state-map (kbd "<escape>") 'evil-normal-state)
-(define-key evil-motion-state-map [left] 'undefined)
-(define-key evil-motion-state-map [right] 'undefined)
-(define-key evil-motion-state-map [up] 'undefined)
-(define-key evil-motion-state-map [down] 'undefined)
+(define-key evil-normal-state-map (kbd "j") 'evil-backward-char)
+(define-key evil-normal-state-map (kbd "i") 'evil-previous-line)
+(define-key evil-normal-state-map (kbd "k") 'evil-next-line)
+(define-key evil-normal-state-map (kbd "h") 'evil-insert)
 
 (evil-mode 1)
 
 ;; company mode
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
-(define-key my-keys-minor-mode-map (kbd "C-SPC") 'company-complete)
-(define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
-
-
-;; mouse and scroll fixes including console emacs
-(xterm-mouse-mode 1)
-(mouse-wheel-mode 1)
-(setq-default mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-(setq-default mouse-wheel-progressive-speed 't)
-(setq-default mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-(setq-default scroll-step 1) ;; keyboard scroll one line at a time
-
+;; (require 'company)
+;; (add-hook 'after-init-hook 'global-company-mode)
+;; (define-key my-keys-minor-mode-map (kbd "C-SPC") 'company-complete)
+;; (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
 
 ;;colors, fonts and themes
 (load-theme 'wombat 't)
-
 
 (global-linum-mode 1)
 ;;font size
@@ -137,6 +115,22 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq-default tab-stop-list (number-sequence 4 120 4))
+
+;;paranteses aroud cursor position, if any
+(require 'highlight-parentheses)
+(global-highlight-parentheses-mode 1)
+
+;; autoclose {} braces
+(electric-indent-mode t)
+(add-hook 'c-mode-hook
+          (lambda ()
+            (c-toggle-electric-state)
+            ))
+
+
+(require 'xcscope)
+(cscope-setup)
+(define-key cscope-list-entry-keymap [mouse-1] 'cscope-select-entry-other-window)
 
 ;; Set default tab space for various  python modes
 (setq-default py-indent-offset 4)
@@ -382,3 +376,10 @@
 
 ;; SHOW FILE PATH IN FRAME TITLE
 (setq-default frame-title-format "%b (%f)")
+
+(global-set-key (kbd "C-x C-b") 'ibuffer-other-window)
+
+(defun my-ibuffer-hook ()
+  (define-key ibuffer-mode-map (kbd "M-<down-mouse-1>") 'ibuffer-visit-buffer-other-window))
+
+(add-hook 'ibuffer-mode-hooks 'my-ibuffer-hook)
