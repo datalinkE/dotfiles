@@ -6,10 +6,8 @@ call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
 
-" Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'Shougo/vimproc.vim'
 Plugin 'tpope/vim-sleuth'
-" Plugin 'tpope/vim-rvm'
 Plugin 'tpope/vim-sensible'
 Plugin 'tpope/vim-surround'
 Plugin 'scrooloose/syntastic'
@@ -18,7 +16,6 @@ Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'ctrlpvim/ctrlp.vim'
-" Plugin 'altercation/vim-colors-solarized'
 Plugin 'nanotech/jellybeans.vim'
 Plugin 'mileszs/ack.vim'
 Plugin 'tpope/vim-fugitive'
@@ -29,40 +26,32 @@ Plugin 'tpope/vim-dispatch'
 Plugin 'majutsushi/tagbar'
 Plugin 'godlygeek/tabular'
 Plugin 'mbbill/undotree'
-" Plugin 'kchmck/vim-coffee-script'
 Plugin 'othree/html5.vim'
 Plugin 'digitaltoad/vim-jade'
-" Plugin 'tmatilai/vim-monit'
-Plugin 'ervandew/supertab'
-" Plugin 'jpalardy/vim-slime'
-" Plugin 'Matt-Deacalion/vim-systemd-syntax'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'fatih/vim-go'
+Plugin 'nsf/gocode', {'rtp' : 'vim/'}
+
 Plugin 'jimenezrick/vimerl'
-Plugin 'wting/rust.vim'
-" Plugin 'cespare/vim-toml'
 Plugin 'facebook/vim-flow'
 Plugin '2072/PHP-Indenting-for-VIm'
 
 Plugin 'eagletmt/ghcmod-vim'
-Plugin 'raichoo/haskell-vim'
 
 Plugin 'elzr/vim-json'
-" Plugin 'vim-scripts/JavaScript-Indent'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'moll/vim-node'
-" Plugin 'mattn/emmet-vim'
 
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-easytags'
 
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'Valloric/ListToggle'
 Plugin 'Valloric/MatchTagAlways'
 
 Plugin 'plasticboy/vim-markdown'
-" Plugin 'greyblake/vim-preview'
 
-" Plugin 'tpope/vim-haml'
 Plugin 'tpope/vim-git'
 
 Plugin 'vim-ruby/vim-ruby'
@@ -152,6 +141,15 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
+nmap l :YcmDiag<CR>
+
+let g:ycm_register_as_syntastic_checker = 0
+let g:ycm_show_diagnostics_ui = 1
+let g:ycm_always_populate_location_list = 1
+let g:ycm_open_loclist_on_ycm_diags = 1
+
+let g:ycm_global_ycm_extra_conf = "~/dotfiles/ycm_extra_conf.py"
+
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
@@ -164,16 +162,6 @@ let g:jsx_ext_required = 0
 let g:vim_json_syntax_conceal = 0
 
 " let g:acp_enableAtStartup = 0
-" let g:neocomplete#enable_at_startup = 1
-" let g:neocomplete#enable_smart_case = 1
-
-" let g:neocomplete#sources#syntax#min_keyword_length = 3
-" let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-" if !exists('g:neocomplete#keyword_patterns')
-" 	let g:neocomplete#keyword_patterns = {}
-" endif
-" let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 
 let g:easytags_async = 1
 
@@ -194,17 +182,13 @@ let g:vim_markdown_folding_disabled = 1
 let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_haml_checkers = ['haml_lint']
 let g:syntastic_ruby_checkers = ['rubocop', 'mri']
-" let g:syntastic_erlang_checkers = ['syntaxerl']
 
 let g:syntastic_php_checkers=['php', 'phpcs']
 let g:syntastic_php_phpcs_exec='~/.composer/vendor/bin/phpcs'
 let g:syntastic_php_phpcs_args='--standard=PSR2 -n'
 
-" imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-" smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-" xmap <C-k>     <Plug>(neosnippet_expand_target)
+let g:syntastic_python_flake8_args = "--ignore=E501 --max-complexity 10"
 
-nmap <F8> :TagbarToggle<CR>
 nnoremap <F5> :UndotreeToggle<cr>
 
 " Map ctrl-movement keys to window switching
@@ -225,10 +209,6 @@ nmap <silent> <leader>tw :set invwrap<CR>:set wrap?<CR>
 
 " find merge conflict markers
 nmap <silent> <leader>fc <ESC>/\v^[<=>]{7}( .*\|$)<CR>
-
-" upper/lower word
-nmap <leader>u mQviwU`Q
-nmap <leader>l mQviwu`Q
 
 nmap <C-\> :NERDTreeFind<CR>
 nmap <silent> <leader><leader> :NERDTreeToggle<CR>
